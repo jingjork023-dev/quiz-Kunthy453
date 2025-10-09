@@ -1,795 +1,800 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Quiz for Exam 13.09.2025</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-            body {
-                font-family: 'Inter', sans-serif;
-            }
-            .quiz-container {
-                max-width: 800px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background-color: #ffffff;
-                border-radius: 1rem;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            }
-            .option-btn {
-                transition: all 0.2s ease-in-out;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                justify-content: center;
-                line-height: 1.5;
-            }
-            .option-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-            .correct {
-                background-color: #d1fae5 !important;
-                border-color: #10b981 !important;
-                color: #065f46;
-            }
-            .incorrect {
-                background-color: #fee2e2 !important;
-                border-color: #ef4444 !important;
-                color: #991b1b;
-            }
-            .selected {
-                background-color: #e0f2fe;
-                border-color: #38bdf8;
-            }
-            .question-nav-btn {
-                transition: all 0.2s ease-in-out;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 600;
-            }
-            .question-nav-btn.active {
-                background-color: #4f46e5;
-                color: white;
-                border-color: #4f46e5;
-            }
-            .question-nav-btn.answered {
-                background-color: #e0e7ff;
-                border-color: #c7d2fe;
-            }
-            .question-nav-btn:hover:not(.active) {
-                background-color: #f3f4f6;
-            }
-            /* Styles for Edit Mode */
-            .edit-input {
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                margin-top: 4px;
-            }
-            .edit-label {
-                font-weight: 500;
-                color: #374151;
-                margin-top: 12px;
-                display: block;
-            }
-        </style>
-    </head>
-    <body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz for Exam 13.09.2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            line-height: 1.5;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .correct {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            color: #065f46;
+        }
+        .incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b;
+        }
+        .selected {
+            background-color: #e0f2fe;
+            border-color: #38bdf8;
+        }
+        .question-nav-btn {
+            transition: all 0.2s ease-in-out;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .question-nav-btn.active {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .question-nav-btn.answered {
+            background-color: #e0e7ff;
+            border-color: #c7d2fe;
+        }
+        .question-nav-btn:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+        /* Styles for Edit Mode */
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        .edit-label {
+            font-weight: 500;
+            color: #374151;
+            margin-top: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
 
-        <div id="quiz-container" class="quiz-container w-full">
-            
-            <div class="text-center mb-8 relative">
-                <h1 class="text-3xl font-bold text-gray-800">Quiz for Exam 13.09.2025</h1>
-                <p class="text-gray-500 mt-2">Subject: Biophysics (Part 1: 10 questions)</p>
-                <p class="text-gray-500">Lecturer: BUN Seangkhin</p>
-                <button id="edit-quiz-btn" class="absolute top-0 right-0 bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm">Edit Quiz</button>
+    <div id="quiz-container" class="quiz-container w-full">
+        
+        <div class="text-center mb-8 relative">
+            <h1 class="text-3xl font-bold text-gray-800">Quiz for Exam 13.09.2025</h1>
+            <p class="text-gray-500 mt-2">Subject: Biophysics (Part 1: 10 questions)</p>
+            <p class="text-gray-500">Lecturer: BUN Seangkhin</p>
+            <button id="edit-quiz-btn" class="absolute top-0 right-0 bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm">Edit Quiz</button>
+        </div>
+
+        <div id="quiz-view">
+            <div id="question-navigation" class="flex flex-wrap justify-center gap-2 mb-6">
+                <!-- Question number buttons will be dynamically inserted here -->
             </div>
 
-            <div id="quiz-view">
-                <div id="question-navigation" class="flex flex-wrap justify-center gap-2 mb-6">
-                    <!-- Question number buttons will be dynamically inserted here -->
+            <div id="question-area" class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="question-number" class="text-xl font-semibold text-gray-700"></h2>
+                    <div id="score-text" class="text-lg font-bold text-indigo-600"></div>
                 </div>
-
-                <div id="question-area" class="mb-8">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 id="question-number" class="text-xl font-semibold text-gray-700"></h2>
-                        <div id="score-text" class="text-lg font-bold text-indigo-600"></div>
-                    </div>
-                    <div id="question-text" class="text-lg text-gray-800 leading-relaxed"></div>
-                </div>
-
-                <div id="answer-area" class="grid grid-cols-1 md-grid-cols-2 gap-4">
-                    <!-- Options will be dynamically inserted here -->
-                </div>
-
-                <div id="feedback-area" class="mt-6 text-center text-lg font-medium"></div>
-
-                <div class="mt-8 flex justify-between items-center">
-                    <button id="prev-btn" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors duration-300 shadow-lg hidden">
-                        <span class="font-semibold">&larr; Previous</span>
-                    </button>
-                    <button id="next-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-300 shadow-lg hidden ml-auto">
-                        <span class="font-semibold">Next Question</span>
-                    </button>
-                </div>
-
-                <div id="results-area" class="hidden text-center">
-                    <div class="mb-4">
-                        <h2 class="text-4xl font-extrabold text-gray-800">Quiz Complete!</h2>
-                    </div>
-                    <p id="results-score" class="text-2xl text-gray-600 mb-6"></p>
-                    <div id="summary" class="text-left mt-8 bg-gray-50 p-6 rounded-lg">
-                        <div class="text-center">
-                            <h3 class="text-xl font-bold text-gray-700">Review Your Answers:</h3>
-                        </div>
-                    </div>
-                    <button id="restart-btn" class="mt-8 bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-300 shadow-lg">
-                        <span class="font-semibold">Play Again</span>
-                    </button>
-                </div>
+                <div id="question-text" class="text-lg text-gray-800 leading-relaxed"></div>
             </div>
 
-            <div id="edit-view" class="hidden">
-                <h2 class="text-2xl font-bold text-center mb-6">Edit Quiz Questions</h2>
-                <div id="edit-question-navigation" class="flex flex-wrap justify-center gap-2 mb-6">
-                    <!-- Edit mode question number buttons will be dynamically inserted here -->
+            <div id="answer-area" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+
+            <div id="feedback-area" class="mt-6 text-center text-lg font-medium"></div>
+
+            <div class="mt-8 flex justify-between items-center">
+                <button id="prev-btn" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-colors duration-300 shadow-lg hidden">
+                    <span class="font-semibold">&larr; Previous</span>
+                </button>
+                <button id="next-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-300 shadow-lg hidden ml-auto">
+                    <span class="font-semibold">Next Question</span>
+                </button>
+            </div>
+
+            <div id="results-area" class="hidden text-center">
+                <div class="mb-4">
+                    <h2 class="text-4xl font-extrabold text-gray-800">Quiz Complete!</h2>
                 </div>
-                <div id="edit-questions-container"></div>
-                <div class="flex justify-between items-start mt-8">
-                    <button id="add-question-btn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700">Add Question</button>
-                    <div>
-                        <button id="cancel-edit-btn" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 mr-4">Cancel</button>
-                        <button id="apply-preview-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700">Apply to Preview</button>
-                        <button id="generate-save-code-btn" class="bg-purple-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-700 ml-4">Generate Save Code</button>
+                <p id="results-score" class="text-2xl text-gray-600 mb-6"></p>
+                <div id="summary" class="text-left mt-8 bg-gray-50 p-6 rounded-lg">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-gray-700">Review Your Answers:</h3>
                     </div>
                 </div>
-                <div id="export-area" class="hidden mt-6 p-4 border-2 border-dashed border-purple-400 rounded-lg bg-purple-50">
-                    <h3 class="text-lg font-semibold text-purple-800">How to Save Your Changes Permanently</h3>
-                    <ol class="list-decimal list-inside text-gray-700 space-y-2 mt-2">
-                        <li>All the code for your updated quiz is in the text box below.</li>
-                        <li>Click anywhere in the box to automatically copy all the code.</li>
-                        <li>Paste the copied code in a new message and send it to me.</li>
-                        <li>I will then update the file for you with your permanent changes.</li>
-                    </ol>
-                    <textarea id="export-output" readonly class="w-full h-64 p-2 border rounded-md bg-gray-100 font-mono text-sm focus:ring-2 focus:ring-indigo-500 mt-4 cursor-pointer"></textarea>
-                    <p id="copy-feedback" class="text-purple-700 font-medium text-sm mt-2 h-4"></p>
-                </div>
+                <button id="restart-btn" class="mt-8 bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-colors duration-300 shadow-lg">
+                    <span class="font-semibold">Play Again</span>
+                </button>
             </div>
         </div>
 
-        <script>
-            let quizData = [
-        {
-            "number": 1,
-            "type": "mcq",
-            "question": {
-                "en": "When ice is heated, it first changes from a solid to a ___________"
-            },
-            "options": {
-                "en": [
-                    "Gas",
-                    "Solid",
-                    "2 phases",
-                    "Liquid"
-                ]
-            },
-            "answer": {
-                "en": "Liquid"
-            }
+        <div id="edit-view" class="hidden">
+            <h2 class="text-2xl font-bold text-center mb-6">Edit Quiz Questions</h2>
+            <div id="edit-question-navigation" class="flex flex-wrap justify-center gap-2 mb-6">
+                <!-- Edit mode question number buttons will be dynamically inserted here -->
+            </div>
+            <div id="edit-questions-container"></div>
+            <div class="flex justify-between items-start mt-8">
+                <button id="add-question-btn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700">Add Question</button>
+                <div>
+                    <button id="cancel-edit-btn" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 mr-4">Cancel</button>
+                    <button id="apply-preview-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700">Apply to Preview</button>
+                    <button id="generate-save-code-btn" class="bg-purple-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-700 ml-4">Generate Save Code</button>
+                </div>
+            </div>
+            <div id="export-area" class="hidden mt-6 p-4 border-2 border-dashed border-purple-400 rounded-lg bg-purple-50">
+                <h3 class="text-lg font-semibold text-purple-800">How to Save Your Changes Permanently</h3>
+                <ol class="list-decimal list-inside text-gray-700 space-y-2 mt-2">
+                    <li>All the code for your updated quiz is in the text box below.</li>
+                    <li>Click anywhere in the box to automatically copy all the code.</li>
+                    <li>Paste the copied code in a new message and send it to me.</li>
+                    <li>I will then update the file for you with your permanent changes.</li>
+                </ol>
+                <textarea id="export-output" readonly class="w-full h-64 p-2 border rounded-md bg-gray-100 font-mono text-sm focus:ring-2 focus:ring-indigo-500 mt-4 cursor-pointer"></textarea>
+                <p id="copy-feedback" class="text-purple-700 font-medium text-sm mt-2 h-4"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let quizData = [
+    {
+        "number": 1,
+        "type": "mcq",
+        "question": {
+            "en": "When ice is heated, it first changes from a solid to a ___________"
         },
-        {
-            "number": 2,
-            "type": "text",
-            "question": {
-                "en": "Describe what happens to water when it is cooled in a freezer."
-            },
-            "answer": {
-                "en": "When water is cooled in a freezer, its molecules slow down and lose energy. They arrange themselves into a fixed, crystalline structure, changing from a liquid state to a solid state, forming ice."
-            },
-            "keywords": {
-                "en": [
-                    "solid",
-                    "ice",
-                    "slow"
-                ]
-            }
+        "options": {
+            "en": [
+                "Gas",
+                "Solid",
+                "2 phases",
+                "Liquid"
+            ]
         },
-        {
-            "number": 3,
-            "type": "mcq",
-            "question": {
-                "en": "The process of changing from a liquid to a gas is called"
-            },
-            "options": {
-                "en": [
-                    "evaporation",
-                    "Melting",
-                    "Freezing",
-                    "Condensation"
-                ]
-            },
-            "answer": {
-                "en": "evaporation"
-            }
+        "answer": {
+            "en": "Liquid"
+        }
+    },
+    {
+        "number": 2,
+        "type": "text",
+        "question": {
+            "en": "Describe what happens to water when it is cooled in a freezer."
         },
-        {
-            "number": 4,
-            "type": "mcq",
-            "question": {
-                "en": "Which of the following is not a process involved in changing the state of matter?"
-            },
-            "options": {
-                "en": [
-                    "Cutting",
-                    "Melting",
-                    "Freezing",
-                    "Condensation"
-                ]
-            },
-            "answer": {
-                "en": "Cutting"
-            }
+        "answer": {
+            "en": "When water is cooled in a freezer, its molecules slow down and lose energy. They arrange themselves into a fixed, crystalline structure, changing from a liquid state to a solid called ice."
         },
-        {
-            "number": 5,
-            "type": "mcq",
-            "question": {
-                "en": "The appearance of water droplets on a cold aluminum can is an example of_____________"
-            },
-            "options": {
-                "en": [
-                    "Melting",
-                    "Condensation",
-                    "Freezing",
-                    "Boiling"
-                ]
-            },
-            "answer": {
-                "en": "Condensation"
-            }
+        "keywords": {
+            "en": [
+                "solid",
+                "ice",
+                "slow"
+            ]
+        }
+    },
+    {
+        "number": 3,
+        "type": "mcq",
+        "question": {
+            "en": "The process of changing from a liquid to a gas is called"
         },
-        {
-            "number": 6,
-            "type": "mcq",
-            "question": {
-                "en": "What is the process called when a gas is cooled and changes into a liquid state?"
-            },
-            "options": {
-                "en": [
-                    "Condensation",
-                    "Freezing",
-                    "Evaporation",
-                    "Melting"
-                ]
-            },
-            "answer": {
-                "en": "Condensation"
-            }
+        "options": {
+            "en": [
+                "evaporation",
+                "Melting",
+                "Freezing",
+                "Condensation"
+            ]
         },
-        {
-            "number": 7,
-            "type": "mcq",
-            "question": {
-                "en": "What is required for the process of melting to take place?"
-            },
-            "options": {
-                "en": [
-                    "Cooling of a solid",
-                    "Evaporation",
-                    "Addition of heat to a solid",
-                    "Freezing a liquid"
-                ]
-            },
-            "answer": {
-                "en": "Addition of heat to a solid"
-            }
+        "answer": {
+            "en": "evaporation"
+        }
+    },
+    {
+        "number": 4,
+        "type": "mcq",
+        "question": {
+            "en": "Which of the following is not a process involved in changing the state of matter?"
         },
-        {
-            "number": 8,
-            "type": "mcq",
-            "question": {
-                "en": "Which of the following statements accurately describes the resting membrane potential of a neuron?"
-            },
-            "options": {
-                "en": [
-                    "The interior of the neuron is positively charged relative to the exterior.",
-                    "The interior of the neuron is negatively charged relative to the exterior.",
-                    "The interior and exterior of the neuron have the same electrical charge.",
-                    "The electrical charge difference across the membrane is constantly changing."
-                ]
-            },
-            "answer": {
-                "en": "The interior of the neuron is negatively charged relative to the exterior."
-            }
+        "options": {
+            "en": [
+                "Cutting",
+                "Melting",
+                "Freezing",
+                "Condensation"
+            ]
         },
-        {
-            "number": 9,
-            "type": "mcq",
-            "question": {
-                "en": "What is the primary role of voltage-gated sodium channels during an action potential?"
-            },
-            "options": {
-                "en": [
-                    "To allow potassium ions to flow out of the cell.",
-                    "To allow sodium ions to flow into the cell.",
-                    "To actively transport sodium ions out of the cell.",
-                    "To actively transport potassium ions into the cell."
-                ]
-            },
-            "answer": {
-                "en": "To allow sodium ions to flow into the cell."
-            }
+        "answer": {
+            "en": "Cutting"
+        }
+    },
+    {
+        "number": 5,
+        "type": "mcq",
+        "question": {
+            "en": "The appearance of water droplets on a cold aluminum can is an example of_____________"
         },
-        {
-            "number": 10,
-            "type": "mcq",
-            "question": {
-                "en": "What is the term for the rapid depolarization and repolarization of the neuron membrane during an action potential?"
-            },
-            "options": {
-                "en": [
-                    "Synaptic potential",
-                    "Graded potential",
-                    "Action potential",
-                    "Resting potential"
-                ]
-            },
-            "answer": {
-                "en": "Action potential"
+        "options": {
+            "en": [
+                "Melting",
+                "Condensation",
+                "Freezing",
+                "Boiling"
+            ]
+        },
+        "answer": {
+            "en": "Condensation"
+        }
+    },
+    {
+        "number": 6,
+        "type": "mcq",
+        "question": {
+            "en": "What is the process called when a gas is cooled and changes into a liquid state?"
+        },
+        "options": {
+            "en": [
+                "Condensation",
+                "Freezing",
+                "Evaporation",
+                "Melting"
+            ]
+        },
+        "answer": {
+            "en": "Condensation"
+        }
+    },
+    {
+        "number": 7,
+        "type": "mcq",
+        "question": {
+            "en": "What is required for the process of melting to take place?"
+        },
+        "options": {
+            "en": [
+                "Cooling of a solid",
+                "Evaporation",
+                "Addition of heat to a solid",
+                "Freezing a liquid"
+            ]
+        },
+        "answer": {
+            "en": "Addition of heat to a solid"
+        }
+    },
+    {
+        "number": 8,
+        "type": "mcq",
+        "question": {
+            "en": "Which of the following statements accurately describes the resting membrane potential of a neuron?"
+        },
+        "options": {
+            "en": [
+                "The interior of the neuron is positively charged relative to the exterior.",
+                "The interior of the neuron is negatively charged relative to the exterior.",
+                "The interior and exterior of the neuron have the same electrical charge.",
+                "The electrical charge difference across the membrane is constantly changing."
+            ]
+        },
+        "answer": {
+            "en": "The interior of the neuron is negatively charged relative to the exterior."
+        }
+    },
+    {
+        "number": 9,
+        "type": "mcq",
+        "question": {
+            "en": "What is the primary role of voltage-gated sodium channels during an action potential?"
+        },
+        "options": {
+            "en": [
+                "To allow potassium ions to flow out of the cell.",
+                "To allow sodium ions to flow into the cell.",
+                "To actively transport sodium ions out of the cell.",
+                "To actively transport potassium ions into the cell."
+            ]
+        },
+        "answer": {
+            "en": "To allow sodium ions to flow into the cell."
+        }
+    },
+    {
+        "number": 10,
+        "type": "mcq",
+        "question": {
+            "en": "What is the term for the rapid depolarization and repolarization of the neuron membrane during an action potential?"
+        },
+        "options": {
+            "en": [
+                "Synaptic potential",
+                "Graded potential",
+                "Action potential",
+                "Resting potential"
+            ]
+        },
+        "answer": {
+            "en": "Action potential"
+        }
+    }
+];
+
+        // Sound Synthesis
+        const correctSynth = new Tone.Synth().toDestination();
+        const incorrectSynth = new Tone.Synth().toDestination();
+        let audioStarted = false;
+
+        // DOM Elements
+        const quizView = document.getElementById('quiz-view');
+        const editView = document.getElementById('edit-view');
+        const editQuizBtn = document.getElementById('edit-quiz-btn');
+        const applyPreviewBtn = document.getElementById('apply-preview-btn');
+        const generateSaveCodeBtn = document.getElementById('generate-save-code-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        const editQuestionsContainer = document.getElementById('edit-questions-container');
+        const editQuestionNavArea = document.getElementById('edit-question-navigation');
+        const exportArea = document.getElementById('export-area');
+        const exportOutput = document.getElementById('export-output');
+        const copyFeedbackEl = document.getElementById('copy-feedback');
+
+        const questionNavArea = document.getElementById('question-navigation');
+        const questionArea = document.getElementById('question-area');
+        const questionNumberEl = document.getElementById('question-number');
+        const scoreTextEl = document.getElementById('score-text');
+        const questionTextEl = document.getElementById('question-text');
+        const answerArea = document.getElementById('answer-area');
+        const feedbackArea = document.getElementById('feedback-area');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const resultsArea = document.getElementById('results-area');
+        const resultsScoreEl = document.getElementById('results-score');
+        const summaryEl = document.getElementById('summary');
+        const restartBtn = document.getElementById('restart-btn');
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let isAnswered = false;
+
+        async function startAudio() {
+            if (!audioStarted) {
+                await Tone.start();
+                audioStarted = true;
             }
         }
-    ];
 
-            // Sound Synthesis
-            const correctSynth = new Tone.Synth().toDestination();
-            const incorrectSynth = new Tone.Synth().toDestination();
-            let audioStarted = false;
+        function updateScoreText() {
+            scoreTextEl.innerHTML = `Score: ${score}`;
+        }
 
-            // DOM Elements
-            const quizView = document.getElementById('quiz-view');
-            const editView = document.getElementById('edit-view');
-            const editQuizBtn = document.getElementById('edit-quiz-btn');
-            const applyPreviewBtn = document.getElementById('apply-preview-btn');
-            const generateSaveCodeBtn = document.getElementById('generate-save-code-btn');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            const addQuestionBtn = document.getElementById('add-question-btn');
-            const editQuestionsContainer = document.getElementById('edit-questions-container');
-            const editQuestionNavArea = document.getElementById('edit-question-navigation');
-            const exportArea = document.getElementById('export-area');
-            const exportOutput = document.getElementById('export-output');
-            const copyFeedbackEl = document.getElementById('copy-feedback');
-
-            const questionNavArea = document.getElementById('question-navigation');
-            const questionArea = document.getElementById('question-area');
-            const questionNumberEl = document.getElementById('question-number');
-            const scoreTextEl = document.getElementById('score-text');
-            const questionTextEl = document.getElementById('question-text');
-            const answerArea = document.getElementById('answer-area');
-            const feedbackArea = document.getElementById('feedback-area');
-            const nextBtn = document.getElementById('next-btn');
-            const prevBtn = document.getElementById('prev-btn');
-            const resultsArea = document.getElementById('results-area');
-            const resultsScoreEl = document.getElementById('results-score');
-            const summaryEl = document.getElementById('summary');
-            const restartBtn = document.getElementById('restart-btn');
-
-            let currentQuestionIndex = 0;
-            let score = 0;
-            let userAnswers = [];
-            let isAnswered = false;
-
-            async function startAudio() {
-                if (!audioStarted) {
-                    await Tone.start();
-                    audioStarted = true;
-                }
-            }
-
-            function updateScoreText() {
-                scoreTextEl.innerHTML = `Score: ${score}`;
-            }
-
-            function startQuiz() {
-                quizView.classList.remove('hidden');
-                editView.classList.add('hidden');
-                
-                currentQuestionIndex = 0;
-                score = 0;
-                userAnswers = [];
-                
-                questionNavArea.classList.remove('hidden');
-                questionArea.classList.remove('hidden');
-                answerArea.classList.remove('hidden');
-                scoreTextEl.parentElement.classList.remove('hidden');
-                resultsArea.classList.add('hidden');
-                renderQuestionButtons();
-                showQuestion();
-                updateScoreText();
-            }
-
-            function renderQuestionButtons() {
-                questionNavArea.innerHTML = '';
-                quizData.forEach((_, index) => {
-                    const button = document.createElement('button');
-                    button.textContent = index + 1;
-                    button.classList.add('question-nav-btn', 'border-2', 'border-gray-300', 'rounded-md');
-                    button.addEventListener('click', () => {
-                        currentQuestionIndex = index;
-                        showQuestion();
-                    });
-                    questionNavArea.appendChild(button);
-                });
-            }
+        function startQuiz() {
+            quizView.classList.remove('hidden');
+            editView.classList.add('hidden');
             
-            function updateQuestionButtonStyles() {
-                const buttons = Array.from(questionNavArea.children);
-                buttons.forEach((button, index) => {
-                    button.classList.remove('active', 'answered');
-                    if (userAnswers[index]) {
-                        button.classList.add('answered');
-                    }
-                });
-                if(buttons[currentQuestionIndex]) {
-                    buttons[currentQuestionIndex].classList.add('active');
-                    buttons[currentQuestionIndex].classList.remove('answered');
-                }
-            }
-
-            function showQuestion() {
-                resetState();
-                if (quizData.length === 0) {
-                    questionTextEl.innerHTML = "No questions in the quiz. Click 'Edit Quiz' to add some!";
-                    answerArea.innerHTML = '';
-                    questionNumberEl.innerHTML = '';
-                    return;
-                }
-                const currentQuestion = quizData[currentQuestionIndex];
-                isAnswered = userAnswers[currentQuestionIndex] !== undefined;
-
-                questionNumberEl.innerHTML = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
-                questionTextEl.innerHTML = `${currentQuestion.question.en}`;
-
-                if (currentQuestion.type === 'mcq') {
-                    answerArea.classList.add('grid');
-                    answerArea.classList.remove('flex', 'flex-col');
-                    currentQuestion.options.en.forEach((optionEn, index) => {
-                        const button = document.createElement('button');
-                        button.innerHTML = `<span>${optionEn}</span>`;
-                        button.classList.add('option-btn', 'w-full', 'p-4', 'border-2', 'border-gray-300', 'rounded-lg', 'text-left', 'hover:bg-gray-100');
-                        button.addEventListener('click', () => selectAnswer(button, optionEn));
-
-                        if(isAnswered) {
-                            button.disabled = true;
-                            const userAnswerData = userAnswers[currentQuestionIndex];
-                            const correctAnswerEn = currentQuestion.answer.en;
-
-                            if (optionEn.trim() === correctAnswerEn.trim()){
-                                button.classList.add('correct');
-                            }
-                            
-                            if (optionEn.trim() === userAnswerData.answer.trim() && !userAnswerData.isCorrect){
-                                button.classList.add('incorrect');
-                            }
-                        }
-
-                        answerArea.appendChild(button);
-                    });
-                } else if (currentQuestion.type === 'text') {
-                    answerArea.classList.remove('grid');
-                    answerArea.classList.add('flex', 'flex-col', 'items-center');
-                    const userAnswer = isAnswered ? userAnswers[currentQuestionIndex].answer : '';
-                    answerArea.innerHTML = `
-                        <textarea id="text-answer" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="4" placeholder="Type your answer here...">${userAnswer}</textarea>
-                        <button id="submit-text-btn" class="mt-4 bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-600">
-                            <span class="font-semibold">Submit Answer</span>
-                        </button>
-                    `;
-                    
-                    const textArea = document.getElementById('text-answer');
-                    const submitBtn = document.getElementById('submit-text-btn');
-                    
-                    if (isAnswered) {
-                        const userAnswerData = userAnswers[currentQuestionIndex];
-                        textArea.disabled = true;
-                        submitBtn.disabled = true;
-                        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                        if(userAnswerData.isCorrect){
-                            textArea.classList.add('correct');
-                        } else {
-                            textArea.classList.add('incorrect');
-                        }
-                    }
-                    
-                    submitBtn.addEventListener('click', checkTextAnswer);
-                }
-                updateQuestionButtonStyles();
-                updateButtonVisibility();
-            }
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
             
-            function resetState() {
-                feedbackArea.textContent = '';
+            questionNavArea.classList.remove('hidden');
+            questionArea.classList.remove('hidden');
+            answerArea.classList.remove('hidden');
+            scoreTextEl.parentElement.classList.remove('hidden');
+            resultsArea.classList.add('hidden');
+            renderQuestionButtons();
+            showQuestion();
+            updateScoreText();
+        }
+
+        function renderQuestionButtons() {
+            questionNavArea.innerHTML = '';
+            quizData.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.textContent = index + 1;
+                button.classList.add('question-nav-btn', 'border-2', 'border-gray-300', 'rounded-md');
+                button.addEventListener('click', () => {
+                    currentQuestionIndex = index;
+                    showQuestion();
+                });
+                questionNavArea.appendChild(button);
+            });
+        }
+        
+        function updateQuestionButtonStyles() {
+            const buttons = Array.from(questionNavArea.children);
+            buttons.forEach((button, index) => {
+                button.classList.remove('active', 'answered');
+                if (userAnswers[index]) {
+                    button.classList.add('answered');
+                }
+            });
+            if(buttons[currentQuestionIndex]) {
+                buttons[currentQuestionIndex].classList.add('active');
+                buttons[currentQuestionIndex].classList.remove('answered');
+            }
+        }
+
+        function showQuestion() {
+            resetState();
+            if (quizData.length === 0) {
+                questionTextEl.innerHTML = "No questions in the quiz. Click 'Edit Quiz' to add some!";
                 answerArea.innerHTML = '';
+                questionNumberEl.innerHTML = '';
+                return;
             }
+            const currentQuestion = quizData[currentQuestionIndex];
+            isAnswered = userAnswers[currentQuestionIndex] !== undefined;
 
-            function updateButtonVisibility() {
-                prevBtn.classList.add('hidden');
-                nextBtn.classList.add('hidden');
+            questionNumberEl.innerHTML = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
+            questionTextEl.innerHTML = `${currentQuestion.question.en}`;
 
-                if (currentQuestionIndex > 0) {
-                    prevBtn.classList.remove('hidden');
-                }
+            if (currentQuestion.type === 'mcq') {
+                answerArea.classList.add('grid');
+                answerArea.classList.remove('flex', 'flex-col');
+                currentQuestion.options.en.forEach((optionEn, index) => {
+                    const button = document.createElement('button');
+                    button.innerHTML = `<span>${optionEn}</span>`;
+                    button.classList.add('option-btn', 'w-full', 'p-4', 'border-2', 'border-gray-300', 'rounded-lg', 'text-left', 'hover:bg-gray-100');
+                    button.addEventListener('click', () => selectAnswer(button, optionEn));
 
-                if (currentQuestionIndex < quizData.length - 1) {
-                    nextBtn.innerHTML = `<span class="font-semibold">Next Question</span>`;
-                    nextBtn.classList.remove('hidden');
-                } else {
-                    nextBtn.innerHTML = `<span class="font-semibold">Show Results</span>`;
-                    nextBtn.classList.remove('hidden');
-                }
-            }
+                    if(isAnswered) {
+                        button.disabled = true;
+                        const userAnswerData = userAnswers[currentQuestionIndex];
+                        const correctAnswerEn = currentQuestion.answer.en;
 
-            async function selectAnswer(button, selectedOptionEn) {
-                await startAudio();
-                if (userAnswers[currentQuestionIndex]) return;
-                isAnswered = true;
-                Array.from(answerArea.children).forEach(btn => {
-                    btn.disabled = true;
-                    btn.classList.remove('selected');
-                });
-                button.classList.add('selected');
-                const currentQuestion = quizData[currentQuestionIndex];
-                const correctAnswerEn = currentQuestion.answer.en;
-                const isCorrect = selectedOptionEn.trim() === correctAnswerEn.trim();
-                
-                if (isCorrect) {
-                    if(!userAnswers[currentQuestionIndex]) score++;
-                    correctSynth.triggerAttackRelease("C5", "8n", Tone.now());
-                    button.classList.add('correct');
-                    feedbackArea.innerHTML = `Correct!`;
-                    feedbackArea.className = 'mt-6 text-center text-lg font-medium text-green-600';
-                } else {
-                    /* New comical "fail" sound effect */
-                    const now = Tone.now();
-                    incorrectSynth.triggerAttackRelease("G3", "16n", now);
-                    incorrectSynth.triggerAttackRelease("F#3", "8n", now + 0.1);
-
-                    button.classList.add('incorrect');
-                    feedbackArea.innerHTML = `Wrong! The correct answer is: ${correctAnswerEn}`;
-                    feedbackArea.className = 'mt-6 text-center text-lg font-medium text-red-600';
-                    Array.from(answerArea.children).forEach(btn => {
-                        if (btn.children[0].textContent.trim() === correctAnswerEn.trim()) {
-                            btn.classList.add('correct');
+                        if (optionEn.trim() === correctAnswerEn.trim()){
+                            button.classList.add('correct');
                         }
-                    });
-                }
-                
-                userAnswers[currentQuestionIndex] = { question: currentQuestion.question, answer: selectedOptionEn, isCorrect: isCorrect, correctAnswer: currentQuestion.answer };
-                updateScoreText();
-                updateQuestionButtonStyles();
-            }
-
-            async function checkTextAnswer() {
-                await startAudio();
-                if (userAnswers[currentQuestionIndex]) return;
-                isAnswered = true;
-                const userAnswer = document.getElementById('text-answer').value;
-                const submitBtn = document.getElementById('submit-text-btn');
-                const textArea = document.getElementById('text-answer');
-                const currentQuestion = quizData[currentQuestionIndex];
-                const keywords = currentQuestion.keywords.en;
-                const isCorrect = keywords.every(kw => userAnswer.toLowerCase().includes(kw));
-                
-                if(isCorrect){
-                    if(!userAnswers[currentQuestionIndex]) score++;
-                    correctSynth.triggerAttackRelease("C5", "8n", Tone.now());
-                    textArea.classList.add('correct');
-                    feedbackArea.innerHTML = `Correct!`;
-                    feedbackArea.className = 'mt-6 text-center text-lg font-medium text-green-600';
-                } else {
-                    /* New comical "fail" sound effect */
-                    const now = Tone.now();
-                    incorrectSynth.triggerAttackRelease("G3", "16n", now);
-                    incorrectSynth.triggerAttackRelease("F#3", "8n", now + 0.1);
-                    
-                    textArea.classList.add('incorrect');
-                    feedbackArea.innerHTML = `Not quite. A good answer is: <br><i>"${currentQuestion.answer.en}"</i>`;
-                    feedbackArea.className = 'mt-6 text-center text-lg font-medium text-red-600';
-                }
-                
-                userAnswers[currentQuestionIndex] = { question: currentQuestion.question, answer: userAnswer, isCorrect: isCorrect, correctAnswer: currentQuestion.answer };
-                textArea.disabled = true;
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                updateScoreText();
-                updateQuestionButtonStyles();
-            }
-
-            function showResults() {
-                questionNavArea.classList.add('hidden');
-                questionArea.classList.add('hidden');
-                answerArea.classList.add('hidden');
-                scoreTextEl.parentElement.classList.add('hidden');
-                nextBtn.classList.add('hidden');
-                prevBtn.classList.add('hidden');
-                feedbackArea.textContent = '';
-                resultsArea.classList.remove('hidden');
-                resultsScoreEl.innerHTML = `Your final score is ${score} out of ${quizData.length}.`;
-                summaryEl.innerHTML = `<div class="text-center mb-4"><h3 class="text-xl font-bold text-gray-700">Review Your Answers:</h3></div>`; 
-                userAnswers.forEach((ua, index) => {
-                    const qData = quizData[index];
-                    const resultDiv = document.createElement('div');
-                    resultDiv.classList.add('mb-4', 'p-3', 'rounded-md');
-                    const yourAnswerText = `Your answer: ${ua.answer}`;
-                    const correctAnswerText = !ua.isCorrect ? `Correct answer: ${ua.correctAnswer.en}` : '';
-                    resultDiv.innerHTML = `
-                        <p class="font-semibold">${qData.number}. ${ua.question.en}</p>
-                        <p class="text-sm ${ua.isCorrect ? 'text-green-700' : 'text-red-700'}">${yourAnswerText}</p>
-                        <p class="text-sm text-gray-600">${correctAnswerText}</p>
-                    `;
-                    resultDiv.classList.add(ua.isCorrect ? 'bg-green-100' : 'bg-red-100');
-                    summaryEl.appendChild(resultDiv);
-                });
-            }
-            
-            // --- EDIT MODE FUNCTIONS ---
-            
-            function toggleEditMode() {
-                quizView.classList.toggle('hidden');
-                editView.classList.toggle('hidden');
-                if (!editView.classList.contains('hidden')) {
-                    renderEditView();
-                }
-                exportArea.classList.add('hidden');
-            }
-
-            function renderEditView() {
-                editQuestionsContainer.innerHTML = '';
-                editQuestionNavArea.innerHTML = '';
-
-                quizData.forEach((q, index) => {
-                    // Create navigation button
-                    const navButton = document.createElement('button');
-                    navButton.textContent = index + 1;
-                    navButton.classList.add('question-nav-btn', 'border-2', 'border-gray-300', 'rounded-md');
-                    navButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        document.getElementById(`edit-q-${index}`).scrollIntoView({ behavior: 'smooth' });
-                    });
-                    editQuestionNavArea.appendChild(navButton);
-                    
-                    // Create question edit form
-                    const questionDiv = document.createElement('div');
-                    questionDiv.id = `edit-q-${index}`;
-                    questionDiv.className = 'border p-4 rounded-lg mb-4 bg-gray-50 scroll-mt-4';
-                    questionDiv.dataset.questionType = q.type;
-                    const correctAnserIndex = q.type === 'mcq' ? q.options.en.map(o => o.trim()).indexOf(q.answer.en.trim()) : -1;
-                    questionDiv.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
-                            <p class="font-bold text-lg">Question ${index + 1}</p>
-                            <button class="delete-question-btn bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600" data-index="${index}">Delete</button>
-                        </div>
-                        <label class="edit-label">Question (English)</label>
-                        <textarea class="edit-input question-en">${q.question.en}</textarea>
-                        <div class="options-container mt-4">
-                        ${q.type === 'mcq' ?
-                            q.options.en.map((optEn, optIndex) => `
-                                <div class="flex items-center gap-2 mb-2">
-                                    <input type="radio" name="correct-answer-${index}" ${optIndex === correctAnserIndex ? 'checked' : ''}>
-                                    <input type="text" class="edit-input option-en" value="${optEn}">
-                                </div>
-                            `).join('') : ''
+                        
+                        if (optionEn.trim() === userAnswerData.answer.trim() && !userAnswerData.isCorrect){
+                            button.classList.add('incorrect');
                         }
-                        </div>
-                        ${q.type === 'text' ? `
-                            <label class="edit-label">Correct Answer (English)</label>
-                            <textarea class="edit-input answer-en">${q.answer.en}</textarea>
-                            <label class="edit-label">Keywords (English, comma-separated)</label>
-                            <input type="text" class="edit-input keywords-en" value="${q.keywords.en.join(', ')}">
-                        ` : ''
-                        }
-                    `;
-                    editQuestionsContainer.appendChild(questionDiv);
-                });
-
-                document.querySelectorAll('.delete-question-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const indexToDelete = parseInt(e.target.dataset.index, 10);
-                        quizData.splice(indexToDelete, 1);
-                        renderEditView();
-                    });
-                });
-            }
-
-            function getEditedData() {
-                const newQuizData = [];
-                const questionForms = editQuestionsContainer.querySelectorAll('.border');
-                questionForms.forEach((form, index) => {
-                    const questionType = form.dataset.questionType;
-                    const newQuestion = {
-                        number: index + 1, type: questionType,
-                        question: { en: form.querySelector('.question-en').value }
-                    };
-                    if (questionType === 'mcq') {
-                        const optionsEnInputs = Array.from(form.querySelectorAll('.option-en'));
-                        const radioButtons = Array.from(form.querySelectorAll('input[type="radio"]'));
-                        const optionsEn = optionsEnInputs.map(input => input.value);
-                        const checkedRadioIndex = radioButtons.findIndex(radio => radio.checked);
-                        const correctIndex = checkedRadioIndex !== -1 ? checkedRadioIndex : 0;
-                        newQuestion.options = { en: optionsEn };
-                        newQuestion.answer = { en: optionsEn[correctIndex] };
-                    } else if (questionType === 'text') {
-                        newQuestion.answer = { en: form.querySelector('.answer-en').value };
-                        newQuestion.keywords = { en: form.querySelector('.keywords-en').value.split(',').map(kw => kw.trim()) };
                     }
-                    newQuizData.push(newQuestion);
+
+                    answerArea.appendChild(button);
                 });
-                return newQuizData;
+            } else if (currentQuestion.type === 'text') {
+                answerArea.classList.remove('grid');
+                answerArea.classList.add('flex', 'flex-col', 'items-center');
+                const userAnswer = isAnswered ? userAnswers[currentQuestionIndex].answer : '';
+                answerArea.innerHTML = `
+                    <textarea id="text-answer" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="4" placeholder="Type your answer here...">${userAnswer}</textarea>
+                    <button id="submit-text-btn" class="mt-4 bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-600">
+                        <span class="font-semibold">Submit Answer</span>
+                    </button>
+                `;
+                
+                const textArea = document.getElementById('text-answer');
+                const submitBtn = document.getElementById('submit-text-btn');
+                
+                if (isAnswered) {
+                    const userAnswerData = userAnswers[currentQuestionIndex];
+                    textArea.disabled = true;
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    if(userAnswerData.isCorrect){
+                        textArea.classList.add('correct');
+                    } else {
+                        textArea.classList.add('incorrect');
+                    }
+                }
+                
+                submitBtn.addEventListener('click', checkTextAnswer);
+            }
+            updateQuestionButtonStyles();
+            updateButtonVisibility();
+        }
+        
+        function resetState() {
+            feedbackArea.textContent = '';
+            answerArea.innerHTML = '';
+        }
+
+        function updateButtonVisibility() {
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+
+            if (currentQuestionIndex > 0) {
+                prevBtn.classList.remove('hidden');
             }
 
-            function applyToPreview() {
-                quizData = getEditedData();
-                toggleEditMode();
-                startQuiz();
+            if (currentQuestionIndex < quizData.length - 1) {
+                nextBtn.innerHTML = `<span class="font-semibold">Next Question</span>`;
+                nextBtn.classList.remove('hidden');
+            } else {
+                nextBtn.innerHTML = `<span class="font-semibold">Show Results</span>`;
+                nextBtn.classList.remove('hidden');
             }
+        }
 
-            function generateSaveCode() {
-                const newQuizData = getEditedData();
-                const exportString = `let quizData = ${JSON.stringify(newQuizData, null, 4)};`;
-                exportOutput.value = exportString;
-                exportArea.classList.remove('hidden');
+        async function selectAnswer(button, selectedOptionEn) {
+            await startAudio();
+            if (userAnswers[currentQuestionIndex]) return;
+            isAnswered = true;
+            Array.from(answerArea.children).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctAnswerEn = currentQuestion.answer.en;
+            const isCorrect = selectedOptionEn.trim() === correctAnswerEn.trim();
+            
+            if (isCorrect) {
+                if(!userAnswers[currentQuestionIndex]) score++;
+                correctSynth.triggerAttackRelease("C5", "8n", Tone.now());
+                button.classList.add('correct');
+                feedbackArea.innerHTML = `Correct!`;
+                feedbackArea.className = 'mt-6 text-center text-lg font-medium text-green-600';
+            } else {
+                /* New comical "fail" sound effect */
+                const now = Tone.now();
+                incorrectSynth.triggerAttackRelease("G3", "16n", now);
+                incorrectSynth.triggerAttackRelease("F#3", "8n", now + 0.1);
+
+                button.classList.add('incorrect');
+                feedbackArea.innerHTML = `Wrong! The correct answer is: ${correctAnswerEn}`;
+                feedbackArea.className = 'mt-6 text-center text-lg font-medium text-red-600';
+                Array.from(answerArea.children).forEach(btn => {
+                    if (btn.children[0].textContent.trim() === correctAnswerEn.trim()) {
+                        btn.classList.add('correct');
+                    }
+                });
             }
+            
+            userAnswers[currentQuestionIndex] = { question: currentQuestion.question, answer: selectedOptionEn, isCorrect: isCorrect, correctAnswer: currentQuestion.answer };
+            updateScoreText();
+            updateQuestionButtonStyles();
+        }
 
-            function addQuestion() {
-                const newMCQ = {
-                    number: quizData.length + 1, type: 'mcq',
-                    question: { en: "New Question English" },
-                    options: { en: ["Option A", "Option B", "Option C", "Option D"] },
-                    answer: { en: "Option A" }
-                };
-                quizData.push(newMCQ);
+        async function checkTextAnswer() {
+            await startAudio();
+            if (userAnswers[currentQuestionIndex]) return;
+            isAnswered = true;
+            const userAnswer = document.getElementById('text-answer').value;
+            const submitBtn = document.getElementById('submit-text-btn');
+            const textArea = document.getElementById('text-answer');
+            const currentQuestion = quizData[currentQuestionIndex];
+            const keywords = (currentQuestion.keywords && currentQuestion.keywords.en) ? currentQuestion.keywords.en : [];
+            const isCorrect = keywords.length > 0 ? keywords.every(kw => userAnswer.toLowerCase().includes(kw.toLowerCase())) : false;
+            
+            if(isCorrect){
+                if(!userAnswers[currentQuestionIndex]) score++;
+                correctSynth.triggerAttackRelease("C5", "8n", Tone.now());
+                textArea.classList.add('correct');
+                feedbackArea.innerHTML = `Correct!`;
+                feedbackArea.className = 'mt-6 text-center text-lg font-medium text-green-600';
+            } else {
+                /* New comical "fail" sound effect */
+                const now = Tone.now();
+                incorrectSynth.triggerAttackRelease("G3", "16n", now);
+                incorrectSynth.triggerAttackRelease("F#3", "8n", now + 0.1);
+                
+                textArea.classList.add('incorrect');
+                feedbackArea.innerHTML = `Not quite. A good answer is: <br><i>"${currentQuestion.answer.en}"</i>`;
+                feedbackArea.className = 'mt-6 text-center text-lg font-medium text-red-600';
+            }
+            
+            userAnswers[currentQuestionIndex] = { question: currentQuestion.question, answer: userAnswer, isCorrect: isCorrect, correctAnswer: currentQuestion.answer };
+            textArea.disabled = true;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            updateScoreText();
+            updateQuestionButtonStyles();
+        }
+
+        function showResults() {
+            questionNavArea.classList.add('hidden');
+            questionArea.classList.add('hidden');
+            answerArea.classList.add('hidden');
+            scoreTextEl.parentElement.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            prevBtn.classList.add('hidden');
+            feedbackArea.textContent = '';
+            resultsArea.classList.remove('hidden');
+            resultsScoreEl.innerHTML = `Your final score is ${score} out of ${quizData.length}.`;
+            summaryEl.innerHTML = `<div class="text-center mb-4"><h3 class="text-xl font-bold text-gray-700">Review Your Answers:</h3></div>`; 
+            userAnswers.forEach((ua, index) => {
+                const qData = quizData[index];
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('mb-4', 'p-3', 'rounded-md');
+                const yourAnswerText = `Your answer: ${ua.answer}`;
+                const correctAnswerText = !ua.isCorrect ? `Correct answer: ${ua.correctAnswer.en}` : '';
+                resultDiv.innerHTML = `
+                    <p class="font-semibold">${qData.number}. ${ua.question.en}</p>
+                    <p class="text-sm ${ua.isCorrect ? 'text-green-700' : 'text-red-700'}">${yourAnswerText}</p>
+                    <p class="text-sm text-gray-600">${correctAnswerText}</p>
+                `;
+                resultDiv.classList.add(ua.isCorrect ? 'bg-green-100' : 'bg-red-100');
+                summaryEl.appendChild(resultDiv);
+            });
+        }
+        
+        // --- EDIT MODE FUNCTIONS ---
+        
+        function toggleEditMode() {
+            quizView.classList.toggle('hidden');
+            editView.classList.toggle('hidden');
+            if (!editView.classList.contains('hidden')) {
                 renderEditView();
             }
+            exportArea.classList.add('hidden');
+        }
 
-            // Event Listeners
-            prevBtn.addEventListener('click', () => {
-                if (currentQuestionIndex > 0) {
-                    currentQuestionIndex--;
-                    showQuestion();
-                }
+        function renderEditView() {
+            editQuestionsContainer.innerHTML = '';
+            editQuestionNavArea.innerHTML = '';
+
+            quizData.forEach((q, index) => {
+                // Create navigation button
+                const navButton = document.createElement('button');
+                navButton.textContent = index + 1;
+                navButton.classList.add('question-nav-btn', 'border-2', 'border-gray-300', 'rounded-md');
+                navButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById(`edit-q-${index}`).scrollIntoView({ behavior: 'smooth' });
+                });
+                editQuestionNavArea.appendChild(navButton);
+                
+                // Create question edit form
+                const questionDiv = document.createElement('div');
+                questionDiv.id = `edit-q-${index}`;
+                questionDiv.className = 'border p-4 rounded-lg mb-4 bg-gray-50 scroll-mt-4';
+                questionDiv.dataset.questionType = q.type;
+                const correctAnswerIndex = q.type === 'mcq' ? q.options.en.map(o => o.trim()).indexOf(q.answer.en.trim()) : -1;
+                questionDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="font-bold text-lg">Question ${index + 1}</p>
+                        <button class="delete-question-btn bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600" data-index="${index}">Delete</button>
+                    </div>
+                    <label class="edit-label">Question (English)</label>
+                    <textarea class="edit-input question-en">${q.question.en}</textarea>
+                    <div class="options-container mt-4">
+                    ${q.type === 'mcq' ?
+                        q.options.en.map((optEn, optIndex) => `
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="radio" name="correct-answer-${index}" ${optIndex === correctAnswerIndex ? 'checked' : ''}>
+                                <input type="text" class="edit-input option-en" value="${optEn}">
+                            </div>
+                        `).join('') : ''
+                    }
+                    </div>
+                    ${q.type === 'text' ? `
+                        <label class="edit-label">Correct Answer (English)</label>
+                        <textarea class="edit-input answer-en">${q.answer.en}</textarea>
+                        <label class="edit-label">Keywords (English, comma-separated)</label>
+                        <input type="text" class="edit-input keywords-en" value="${(q.keywords && q.keywords.en) ? q.keywords.en.join(', ') : ''}">
+                    ` : ''
+                    }
+                `;
+                editQuestionsContainer.appendChild(questionDiv);
             });
 
-            nextBtn.addEventListener('click', () => {
-                if (currentQuestionIndex < quizData.length - 1) {
-                    currentQuestionIndex++;
-                    showQuestion();
-                } else {
-                    showResults();
-                }
+            document.querySelectorAll('.delete-question-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const indexToDelete = parseInt(e.target.dataset.index, 10);
+                    quizData.splice(indexToDelete, 1);
+                    // Re-number remaining
+                    quizData = quizData.map((q, i) => ({ ...q, number: i + 1 }));
+                    renderEditView();
+                });
             });
-            restartBtn.addEventListener('click', startQuiz);
-            editQuizBtn.addEventListener('click', toggleEditMode);
-            applyPreviewBtn.addEventListener('click', applyToPreview);
-            generateSaveCodeBtn.addEventListener('click', generateSaveCode);
-            cancelEditBtn.addEventListener('click', toggleEditMode);
-            addQuestionBtn.addEventListener('click', addQuestion);
-            exportOutput.addEventListener('click', () => {
-                exportOutput.select();
+        }
+
+        function getEditedData() {
+            const newQuizData = [];
+            const questionForms = editQuestionsContainer.querySelectorAll('.border');
+            questionForms.forEach((form, index) => {
+                const questionType = form.dataset.questionType;
+                const newQuestion = {
+                    number: index + 1, type: questionType,
+                    question: { en: form.querySelector('.question-en').value }
+                };
+                if (questionType === 'mcq') {
+                    const optionsEnInputs = Array.from(form.querySelectorAll('.option-en'));
+                    const radioButtons = Array.from(form.querySelectorAll('input[type="radio"]'));
+                    const optionsEn = optionsEnInputs.map(input => input.value);
+                    const checkedRadioIndex = radioButtons.findIndex(radio => radio.checked);
+                    const correctIndex = checkedRadioIndex !== -1 ? checkedRadioIndex : 0;
+                    newQuestion.options = { en: optionsEn };
+                    newQuestion.answer = { en: optionsEn[correctIndex] };
+                } else if (questionType === 'text') {
+                    newQuestion.answer = { en: form.querySelector('.answer-en').value };
+                    newQuestion.keywords = { en: form.querySelector('.keywords-en').value.split(',').map(kw => kw.trim()).filter(Boolean) };
+                }
+                newQuizData.push(newQuestion);
+            });
+            return newQuizData;
+        }
+
+        function applyToPreview() {
+            quizData = getEditedData();
+            toggleEditMode();
+            startQuiz();
+        }
+
+        function generateSaveCode() {
+            const newQuizData = getEditedData();
+            const exportString = `let quizData = ${JSON.stringify(newQuizData, null, 4)};`;
+            exportOutput.value = exportString;
+            exportArea.classList.remove('hidden');
+        }
+
+        function addQuestion() {
+            const newMCQ = {
+                number: quizData.length + 1, type: 'mcq',
+                question: { en: "New Question English" },
+                options: { en: ["Option A", "Option B", "Option C", "Option D"] },
+                answer: { en: "Option A" }
+            };
+            quizData.push(newMCQ);
+            renderEditView();
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        });
+        restartBtn.addEventListener('click', startQuiz);
+        editQuizBtn.addEventListener('click', toggleEditMode);
+        applyPreviewBtn.addEventListener('click', applyToPreview);
+        generateSaveCodeBtn.addEventListener('click', generateSaveCode);
+        cancelEditBtn.addEventListener('click', toggleEditMode);
+        addQuestionBtn.addEventListener('click', addQuestion);
+        exportOutput.addEventListener('click', () => {
+            exportOutput.select();
+            try {
                 document.execCommand('copy');
                 copyFeedbackEl.textContent = 'Code copied to clipboard!';
                 setTimeout(() => { copyFeedbackEl.textContent = '' }, 2000);
-            });
+            } catch (e) {
+                copyFeedbackEl.textContent = 'Press Ctrl+C to copy';
+            }
+        });
 
-            // Initial start
-            startQuiz();
-        </script>
-    </body>
-    </html>
-
+        // Initial start
+        startQuiz();
+    </script>
+</body>
+</html>
